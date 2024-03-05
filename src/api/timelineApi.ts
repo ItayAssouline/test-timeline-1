@@ -1,6 +1,5 @@
 import {DataSet, Timeline} from "vis-timeline/standalone";
-import {useTimelineStore} from "../store/dataStore.ts";
-import {mainFlow} from "../flows/mainFlow.ts";
+import {IRange} from "../types/time.types.ts";
 
 export class TimelineApi {
     private _container?: HTMLDivElement;
@@ -12,13 +11,16 @@ export class TimelineApi {
         return this._container
     }
 
-    public async init(container: HTMLDivElement) {
+    public async init(container: HTMLDivElement, dataset: any, initialRange: IRange, onRangeChanged: (e: IRange) => void) {
+
+
         this.didInit = true;
         this._container = container;
-        const dataset = useTimelineStore.getState().dataSet;
         this._timeline = new Timeline(this.container, dataset, {
-            stack: false
+            stack: false,
+            start: initialRange.start,
+            end: initialRange.end
         });
-        await mainFlow();
+        this._timeline.on("rangechanged", onRangeChanged);
     }
 }
